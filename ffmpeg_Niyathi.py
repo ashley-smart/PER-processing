@@ -26,7 +26,7 @@ def main():
   #run ffmpeg code
   final_jpeg_path_v1 = os.path.join(video_1_jpeg_path, 'V01frame_%07d.jpg')
   final_vid_1_path = os.path.join(video_1_path, video_1_name)
-  cmd = f'ffmpeg -i 'REPLACEPATH' 'REPLACEPATHJPEG'  #have to do it this way because I have spaces in the filepath
+  cmd = f'ffmpeg -i REPLACEPATH REPLACEPATHJPEG'  #have to do it this way because I have spaces in the filepath
   split_version = cmd.split(" ")
   split_version[2] = final_vid_1_path
   split_version[3] = final_jpeg_path_v1
