@@ -35,7 +35,7 @@ def main():
   if video_2_name is not None:
     final_jpeg_path_v2 = os.path.join(video_2_jpeg_path, 'V02frame_%07d.jpg')
     final_vid_2_path = os.path.join(video_2_path, video_2_name)
-    cmd = f'ffmpeg -i 'REPLACEPATH' 'REPLACEPATHJPEG'  #have to do it this way because I have spaces in the filepath
+    cmd = f'ffmpeg -i REPLACEPATH REPLACEPATHJPEG'  #have to do it this way because I have spaces in the filepath
     split_version = cmd.split(" ")
     split_version[2] = final_vid_2_path
     split_version[3] = final_jpeg_path_v2
