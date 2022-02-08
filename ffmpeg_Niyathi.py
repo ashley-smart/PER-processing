@@ -32,6 +32,8 @@ def main():
   split_version[3] = final_jpeg_path_v1
   subprocess.call(split_version)
   
+  print('video 1 DONE')
+  
   if video_2_name is not None:
     final_jpeg_path_v2 = os.path.join(video_2_jpeg_path, 'V02frame_%07d.jpg')
     final_vid_2_path = os.path.join(video_2_path, video_2_name)
@@ -40,6 +42,8 @@ def main():
     split_version[2] = final_vid_2_path
     split_version[3] = final_jpeg_path_v2
     subprocess.call(split_version)
+    
+    print('video 2 DONE')
   
   
   
