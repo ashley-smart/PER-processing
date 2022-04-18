@@ -114,9 +114,10 @@ for i in range(len(all_roi_info_dict)):
 #get some frames to calc h, w
 all_frames = []
 for jpeg in sorted_jpeg_file_names[0:10]:
-    jpeg_file_path = os.path.join(jpeg_path, jpeg)
-    frame = cv2.imread(jpeg_file_path, 0) #0 to load in grayscale
-    all_frames.append(frame)
+    if '.jpg' in jpeg:
+       jpeg_file_path = os.path.join(jpeg_path, jpeg)
+       frame = cv2.imread(jpeg_file_path, 0) #0 to load in grayscale
+       all_frames.append(frame)
 h,w = np.shape(all_frames[0])  #add c if it is not in grayscale
 
 #convert pixels in image into coordinates in an array
