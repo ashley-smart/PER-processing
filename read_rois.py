@@ -37,6 +37,9 @@ rois = os.listdir(roi_path)
 
 jpeg_path = str(path_to_date) + str(date) + "/analysis/Video_" + str(video_number) + "/"
 jpeg_file_names = os.listdir(jpeg_path)
+print('unsorted', jpeg_file_names[0:5])
+sorted_jpeg_file_names = sorted(jpeg_file_names)
+print('sorted', jpeg_file_names[0:5])
 
 # location to save csv files 
 save_path = str(path_to_date) + str(date) + "/analysis/" 
@@ -110,7 +113,7 @@ for i in range(len(all_roi_info_dict)):
 
 #get some frames to calc h, w
 all_frames = []
-for jpeg in jpeg_file_names[0:10]:
+for jpeg in sorted_jpeg_file_names[0:10]:
     jpeg_file_path = os.path.join(jpeg_path, jpeg)
     frame = cv2.imread(jpeg_file_path, 0) #0 to load in grayscale
     all_frames.append(frame)
@@ -142,7 +145,7 @@ for roi_index in range(len(all_poly_x)):
 #open each frame-find the itnensity in the ROI 
 #and save the average intensity for each frame
 all_avg_intensity = []
-for jpeg_index in range(len(jpeg_file_names)):
+for jpeg_index in range(len(sorted_jpeg_file_names)):
     #open each frame to get instensities
     jpeg_file_path = os.path.join(jpeg_path, jpeg_file_names[jpeg_index])
     frame = cv2.imread(jpeg_file_path, 0) #0 to load in grayscale
