@@ -39,7 +39,7 @@ jpeg_path = str(path_to_date) + str(date) + "/analysis/Video_" + str(video_numbe
 jpeg_file_names = os.listdir(jpeg_path)
 print('unsorted', jpeg_file_names[0:5])
 sorted_jpeg_file_names = sorted(jpeg_file_names)
-print('sorted', jpeg_file_names[0:5])
+print('sorted', sorted_jpeg_file_names[0:5])
 
 # location to save csv files 
 save_path = str(path_to_date) + str(date) + "/analysis/" 
