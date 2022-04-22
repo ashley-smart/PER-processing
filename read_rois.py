@@ -45,7 +45,7 @@ print('sorted', sorted_jpeg_file_names[0:5])
 save_path = str(path_to_date) + str(date) + "/analysis/" 
 
 #name of file when completed (keep this the same)
-save_file_name = "Results_video_" + str(video_number) + "_python.csv"
+save_file_name = "Results_video_" + str(video_number) + "_python_sorted.csv"
 
 if os.path.exists(save_path):
     print('save path folder there')
@@ -148,7 +148,7 @@ for roi_index in range(len(all_poly_x)):
 all_avg_intensity = []
 for jpeg_index in range(len(sorted_jpeg_file_names)):
     #open each frame to get instensities
-    jpeg_file_path = os.path.join(jpeg_path, jpeg_file_names[jpeg_index])
+    jpeg_file_path = os.path.join(jpeg_path, sorted_jpeg_file_names[jpeg_index])
     frame = cv2.imread(jpeg_file_path, 0) #0 to load in grayscale
     if frame is not None:
         #frame = cv2.imread(jpeg_file_path) 
