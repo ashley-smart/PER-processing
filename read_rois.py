@@ -147,21 +147,22 @@ for roi_index in range(len(all_poly_x)):
 #and save the average intensity for each frame
 all_avg_intensity = []
 for jpeg_index in range(len(sorted_jpeg_file_names)):
-    #open each frame to get instensities
-    jpeg_file_path = os.path.join(jpeg_path, sorted_jpeg_file_names[jpeg_index])
-    frame = cv2.imread(jpeg_file_path, 0) #0 to load in grayscale
-    if frame is not None:
-        #frame = cv2.imread(jpeg_file_path) 
-        #flatten image to use mask on it
-        flat_frame = frame.flatten()
-        #get averages for all ROI in one list
-        all_roi_avg_intensity_per_frame = []
-        for roi_index in range(len(all_roi_masks)):
-            avg_intensity_each_roi = np.mean(flat_frame[all_roi_masks[roi_index]])
-            all_roi_avg_intensity_per_frame.append(avg_intensity_each_roi)
-    else:
-        print(jpeg_index)
-    all_avg_intensity.append(all_roi_avg_intensity_per_frame)
+    if '.jpg' in sorted_jpeg_file_names[jpeg_index]:
+       #open each frame to get instensities
+       jpeg_file_path = os.path.join(jpeg_path, sorted_jpeg_file_names[jpeg_index])
+       frame = cv2.imread(jpeg_file_path, 0) #0 to load in grayscale
+       if frame is not None:
+           #frame = cv2.imread(jpeg_file_path) 
+           #flatten image to use mask on it
+           flat_frame = frame.flatten()
+           #get averages for all ROI in one list
+           all_roi_avg_intensity_per_frame = []
+           for roi_index in range(len(all_roi_masks)):
+               avg_intensity_each_roi = np.mean(flat_frame[all_roi_masks[roi_index]])
+               all_roi_avg_intensity_per_frame.append(avg_intensity_each_roi)
+       else:
+           print(jpeg_index)
+       all_avg_intensity.append(all_roi_avg_intensity_per_frame)
     
 #save results 
 #want the format to be the same as the fiji format so I don't have to change my other code
