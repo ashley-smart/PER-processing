@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=11-19read_rois
+#SBATCH --job-name=1-7read_rois
 #SBATCH --time=4-00:00:00
 #SBATCH --ntasks=1
-#SBATCH --partition=trc
-#SBATCH --cpus-per-task=2
+#SBATCH --partition=owners
+#SBATCH --cpus-per-task=4
 #SBATCH --output=./roi-logs/mainlog.out
 #SBATCH --open-mode=append
 #SBATCH --mail-type=ALL
