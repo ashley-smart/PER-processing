@@ -25,9 +25,9 @@ from read_roi import read_roi_zip
 
 #### change this ####
 #print('got this far')
-date = '3-25-22'  #name of folder the files are in 
+date = '1-7-22'  #name of folder the files are in 
 video_number = 1   # video number using
-roi_number = 2 #make sure rois are saved with this filename format "RoiSet_vid1"
+roi_number = 1 #make sure rois are saved with this filename format "RoiSet_vid1"
 path_to_date = '/oak/stanford/groups/trc/data/Niyathi/' ##end with / and just before date folder (shouldn't need to change)
    
 ###   ###
