@@ -2,7 +2,7 @@
 #SBATCH --job-name=3-27read_rois
 #SBATCH --time=2-00:00:00
 #SBATCH --ntasks=1
-#SBATCH --partition=owners
+#SBATCH --partition=trc
 #SBATCH --cpus-per-task=4
 #SBATCH --output=./roi-logs/mainlog.out
 #SBATCH --open-mode=append
