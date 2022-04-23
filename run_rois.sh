@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=1-7read_rois
-#SBATCH --time=4-00:00:00
+#SBATCH --time=2-00:00:00
 #SBATCH --ntasks=1
 #SBATCH --partition=owners
 #SBATCH --cpus-per-task=4
