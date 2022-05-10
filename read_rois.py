@@ -25,7 +25,7 @@ from read_roi import read_roi_zip
 
 #### change this ####
 #print('got this far')
-date_list = [1-3-22, 1-10-22, 1-12-22]
+date_list = ['3-29-22', '3-29-22 II', '3-30-22', 4-2-22]
 for date in date_list:
    #date = '1-17-22'  #name of folder the files are in 
    video_number = 1   # video number using
