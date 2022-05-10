@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=manyread_rois
+#SBATCH --job-name=2manyread_rois
 #SBATCH --time=4-00:00:00
 #SBATCH --ntasks=1
 #SBATCH --partition=trc
