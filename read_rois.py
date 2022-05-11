@@ -25,7 +25,7 @@ from read_roi import read_roi_zip
 
 #### change this ####
 #print('got this far')
-date_list = ['4-6-22', '4-6-22 II', '4-8-22']
+date_list = ['4-2-22']
 for date in date_list:
    #date = '1-17-22'  #name of folder the files are in 
    video_number = 1   # video number using
@@ -176,3 +176,4 @@ for date in date_list:
        writer.writerow(header)
        for frame_i in range(len(all_avg_intensity)):
            writer.writerow(all_avg_intensity[frame_i])
+   print(str(date) + ' ----------- COMPLETED AND SAVED!') 
