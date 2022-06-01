@@ -179,5 +179,5 @@ for date in date_list:
               writer.writerow(all_avg_intensity[frame_i])
       print(str(date) + ' ----------- COMPLETED AND SAVED!') 
    else:
-        print(f'{jpeg_path} does not exist'
+        print(f'{jpeg_path} does not exist')
         continue
