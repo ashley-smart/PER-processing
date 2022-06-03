@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=4-2read_rois
+#SBATCH --job-name=1214read_rois
 #SBATCH --time=4-00:00:00
 #SBATCH --ntasks=1
 #SBATCH --partition=trc
 #SBATCH --cpus-per-task=2
-#SBATCH --output=./roi-logs/mainlog.out
+#SBATCH --output=./roi-logs/mainlog2.out
 #SBATCH --open-mode=append
 #SBATCH --mail-type=ALL
 
