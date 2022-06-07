@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --partition=trc
 #SBATCH --cpus-per-task=2
-#SBATCH --output=./logs/mainlog.out
+#SBATCH --output=./logs/mainlog2.out
 #SBATCH --open-mode=append
 #SBATCH --mail-type=ALL
 
