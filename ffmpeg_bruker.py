@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 #variables to change
-date = '20210806'    #date folder
+date = '20210802'    #date folder
 
 #main path
 video_path = '/oak/stanford/groups/trc/data/Ashley2/bruker videos/' + str(date) +'/'   #should end in /
@@ -36,7 +36,7 @@ def main():
         ## run ffmpeg
         
         final_jpeg_path_v1 = os.path.join(jpeg_path, 'V01frame_%07d.jpg')
-        cmd = f'ffmpeg -i REPLACEPATH REPLACEPATHJPEG'  #have to do it this way because I have spaces in the filepath
+        cmd = f'ffmpeg -i REPLACEPATH REPLACEPATHJPEG -hide_banner -loglevel error'  #have to do it this way because I have spaces in the filepath
         split_version = cmd.split(" ")
         split_version[2] = fly_video #replaces REPLACEPATH
         split_version[3] = final_jpeg_path_v1 #replaces REPLACEPATHJPEG
