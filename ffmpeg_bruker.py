@@ -10,7 +10,7 @@ import sys
 date = '20210806'    #date folder
 
 #main path
-video_path = '/oak/stanford/groups/trc/data/Ashley2/bruker videos' + str(date) +'/'   #should end in /
+video_path = '/oak/stanford/groups/trc/data/Ashley2/bruker videos/' + str(date) +'/'   #should end in /
 
 
 
