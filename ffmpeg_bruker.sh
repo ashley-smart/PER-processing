@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=ffmpeg
-#SBATCH --time=4-00:00:00
+#SBATCH --time=7-00:00:00
 #SBATCH --ntasks=1
 #SBATCH --partition=trc
 #SBATCH --cpus-per-task=2
