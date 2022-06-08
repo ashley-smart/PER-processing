@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 #variables to change
-date = '20210802'    #date folder
+date = '20210730'    #date folder
 
 #main path
 video_path = '/oak/stanford/groups/trc/data/Ashley2/bruker videos/' + str(date) +'/'   #should end in /
@@ -24,8 +24,10 @@ def main():
         print(video_name)
         if len(video_name) == 0 or len(video_name) > 1:
             raise Exception("ERROR: THERE ARE TOO MANY ITEMS IN FOLDER or TOO FEW", video_name)
+            break
         if '.avi' not in video_name[0]:
             raise Exception ("ERROR: this file is not avi", video_name[0])
+            break
         fly_video = os.path.join(fly_video_path, str(video_name[0]))
 
         # make jpeg path
