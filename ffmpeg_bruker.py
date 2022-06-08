@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 #variables to change
-date = '20210730'    #date folder
+date = '20210802'    #date folder
 
 #main path
 video_path = '/oak/stanford/groups/trc/data/Ashley2/bruker videos/' + str(date) +'/'   #should end in /
@@ -17,7 +17,7 @@ video_path = '/oak/stanford/groups/trc/data/Ashley2/bruker videos/' + str(date) 
 def main():
   #find fly folders
   for fly_dir in os.listdir(video_path):
-    if 'fly' in fly_dir:
+    if 'fly2' in fly_dir:
         fly_video_path = os.path.join(video_path, fly_dir)
         video_name = os.listdir(fly_video_path)
         print(fly_video_path)
