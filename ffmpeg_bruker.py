@@ -22,8 +22,8 @@ def main():
         video_name = os.listdir(fly_video_path)
         print(fly_video_path)
         print(video_name)
-        if len(video_name) > 1:
-            raise Exception("ERROR: THERE ARE TOO MANY ITEMS IN FOLDER", video_name)
+        if len(video_name) == 0 or len(video_name) > 1:
+            raise Exception("ERROR: THERE ARE TOO MANY ITEMS IN FOLDER or TOO FEW", video_name)
         if '.avi' not in video_name[0]:
             raise Exception ("ERROR: this file is not avi", video_name[0])
         fly_video = os.path.join(fly_video_path, str(video_name[0]))
