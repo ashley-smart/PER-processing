@@ -38,19 +38,7 @@ def main():
                   print('unsorted', jpeg_file_names[0:5])
                   sorted_jpeg_file_names = sorted(jpeg_file_names)
                   print('sorted', sorted_jpeg_file_names[0:5])
-
-                  # location to save csv files 
-                  save_path = str(path_to_date) + str(date) + "/analysis/" 
-
-                  #name of file when completed (keep this the same)
-                  save_file_name = "Results_video_" + str(video_number) + "_python_sorted.csv"
-
-                  if os.path.exists(save_path):
-                      print('save path folder there')
-                  else:
-                      os.makedirs(save_path)
-                      print('save path folder created')
-
+ 
                   ######################################################
 
                   ## get ROI dictionaries
@@ -171,7 +159,7 @@ def main():
                       for frame_i in range(len(all_avg_intensity)):
                           writer.writerow(all_avg_intensity[frame_i])
                   print(str(date) + ' ----------- COMPLETED AND SAVED!') 
-               else:
+                else:
                     print(f'{jpeg_path} does not exist')
                     continue
 
