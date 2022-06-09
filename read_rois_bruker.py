@@ -32,19 +32,16 @@ def main():
                 save_file_name = "Results_video_" + str(fly_dir) + "_python.csv" #so each fly is saved seperately
                 save_path = "/oak/stanford/groups/trc/data/Ashley2/bruker videos/" + str(date) + "/analysis/" 
                 make_dirs(save_path)
-                ##  ### ## ##
-
                 
-                
-
-                
-
                 ####### get ROI dictionaries
                 #get roi data into dictionary --only doing one ROI for bruker so don't need to go through multiple
                 all_roi_info_dict = []
                 roi_name = str(roi_number) + ".roi"
 
                 roi_file_path = os.path.join(roi_path, roi_name)
+                if roi_name not in os.listdir(roi_path):
+                    raise Exception (f"ERROR: Roi name ({roi_name}) is not found in directory: {os.listdir(roi_path)}")
+                    break
                 roi = read_roi_file(roi_file_path)
                 all_roi_info_dict.append(roi)
 
