@@ -25,7 +25,7 @@ def main():
         roi_path = "/oak/stanford/groups/trc/data/Ashley2/bruker videos/" + str(date) + '/analysis/' 
         
         for fly_dir in os.listdir(roi_path):
-            if 'fly' in fly_dir: #to get fly folders
+            if 'fly' in fly_dir and 'PER' not in fly_dir: #to get fly folders without getting rois
                 jpeg_path = os.path.join(roi_path, fly_dir)
                 #since rois are different for every video specify with fly tag same as fly dir name
                 roi_number = 'PER_' + str(fly_dir)  #so roi should be saved PER_fly1.roi or PER_fly2.roi
