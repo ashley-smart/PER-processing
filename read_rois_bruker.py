@@ -32,8 +32,6 @@ def main():
                 save_file_name = "Results_video_" + str(fly_dir) + "_python.csv" #so each fly is saved seperately
                 save_path = "/oak/stanford/groups/trc/data/Ashley2/bruker videos/" + str(date) + "/analysis/" 
                 make_dirs(save_path)
-                
-                jpeg_path = str(path_to_date) + str(date) + "/analysis/Video_" + str(video_number) + "/"
                
                 if os.path.exists(jpeg_path):
                   jpeg_file_names = os.listdir(jpeg_path)
