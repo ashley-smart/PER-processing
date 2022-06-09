@@ -35,7 +35,6 @@ def main():
                
                 if os.path.exists(jpeg_path):
                   jpeg_file_names = os.listdir(jpeg_path)
-                  print('unsorted', jpeg_file_names[0:5])
                   sorted_jpeg_file_names = sorted(jpeg_file_names)
                   print('sorted', sorted_jpeg_file_names[0:5])
  
@@ -43,14 +42,13 @@ def main():
 
                   ## get ROI dictionaries
                   #read_roi_file puts data into dict in dict
-                  all_roi_info_dict = []
-                  for roi_name in rois:
-                      roi_file_path = os.path.join(roi_path, roi_name)
-                      if roi_name not in os.listdir(roi_path):
-                        raise Exception (f"ERROR: Roi name ({roi_name}) is not found in directory: {os.listdir(roi_path)}")
-                        break
-                      roi = read_roi_file(roi_file_path)
-                      all_roi_info_dict.append(roi)
+                  all_roi_info_dict = []                 
+                  roi_file_path = os.path.join(roi_path, roi_name)
+                  if roi_name not in os.listdir(roi_path):
+                    raise Exception (f"ERROR: Roi name ({roi_name}) is not found in directory: {os.listdir(roi_path)}")
+                    break
+                  roi = read_roi_file(roi_file_path)
+                  all_roi_info_dict.append(roi)
 
                   #get roi names as keys for original dict that has dicts of info
                   #need to use list to get rid of dict specifier
