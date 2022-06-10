@@ -26,7 +26,7 @@ def main():
         
         for fly_dir in os.listdir(roi_path):
             if 'fly' in fly_dir and 'PER' not in fly_dir: #to get fly folders without getting rois
-                if os.isdir(os.path.join(roi_path, fly_dir)): # to get rid of the other stuff in the folder (including new results file)
+                if os.path.isdir(os.path.join(roi_path, fly_dir)): # to get rid of the other stuff in the folder (including new results file)
                     jpeg_path = os.path.join(roi_path, fly_dir)
                     #since rois are different for every video specify with fly tag same as fly dir name
                     #this may need to be changed when I get more than one ROI per fly
