@@ -28,7 +28,8 @@ def main():
             if 'fly' in fly_dir and 'PER' not in fly_dir: #to get fly folders without getting rois
                 jpeg_path = os.path.join(roi_path, fly_dir)
                 #since rois are different for every video specify with fly tag same as fly dir name
-                roi_number = 'PER_' + str(fly_dir)  #so roi should be saved PER_fly1.roi or PER_fly2.roi
+                #this may need to be changed when I get more than one ROI per fly
+                roi_name = 'PER_' + str(fly_dir) + '.roi' #so roi should be saved PER_fly1.roi or PER_fly2.roi
                 save_file_name = "Results_video_" + str(fly_dir) + "_python.csv" #so each fly is saved seperately
                 save_path = "/oak/stanford/groups/trc/data/Ashley2/bruker videos/" + str(date) + "/analysis/" 
                 make_dirs(save_path)
