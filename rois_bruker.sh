@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --partition=trc
 #SBATCH --cpus-per-task=2
-#SBATCH --output=./roi-logs/mainlog.out
+#SBATCH --output=./roi-logs/bruker_mainlog.out
 #SBATCH --open-mode=append
 #SBATCH --mail-type=ALL
 
