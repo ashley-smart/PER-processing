@@ -18,7 +18,7 @@ from read_roi import read_roi_zip
 
 ## Stuff to change  ##
 
-dates = ['20210730', '20210802', '20210806', '20210709']
+dates = ['20210802', '20210806', '20210709']
 
 def main():
     for date in dates:
@@ -158,7 +158,7 @@ def main():
                           writer.writerow(header)
                           for frame_i in range(len(all_avg_intensity)):
                               writer.writerow(all_avg_intensity[frame_i])
-                      print(str(date) + ' ----------- COMPLETED AND SAVED!') 
+                      print(str(date) + ' fly:' + str(fly_dir) + ' ----------- COMPLETED AND SAVED!') 
                     else:
                         print(f'{jpeg_path} does not exist')
                         continue
