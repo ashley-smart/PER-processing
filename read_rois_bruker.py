@@ -22,6 +22,7 @@ dates = ['20210702', '20210607', '20210714', '20210716', '20210719']
 
 def main():
     for date in dates:
+        print(f"RUNNING CURRENT DATE: {date}")
         roi_path = "/oak/stanford/groups/trc/data/Ashley2/bruker videos/" + str(date) + '/analysis/' 
         
         #look for results files and roi files
@@ -40,6 +41,8 @@ def main():
                 print('fly dir is ok:', fly_dir)
                 dir_number = find_number(find_fly_string(fly_dir))
                 print('fly dir number:', dir_number)
+                if len(dir_number) == 0:
+                    raise Exception(f"ERROR: THERE IS NO DIRECTORY NUMBER FOR...{fly_dir}")
                 jpeg_path = os.path.join(roi_path, fly_dir)
                 #since rois are different for every video specify with fly tag same as fly dir name
                 #this may need to be changed when I get more than one ROI per fly
