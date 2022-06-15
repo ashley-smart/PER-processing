@@ -18,28 +18,40 @@ from read_roi import read_roi_zip
 
 ## Stuff to change  ##
 
-dates = ['20210802', '20210806', '20210709']
+dates = ['20210702', '20210607', '20210714', '20210716', '20210719']
 
 def main():
     for date in dates:
         roi_path = "/oak/stanford/groups/trc/data/Ashley2/bruker videos/" + str(date) + '/analysis/' 
         
-        #look for results files
+        #look for results files and roi files
         fly_number_done = []
+        roi_list = []
         for file in os.listdir(roi_path):
             if 'Results' in file:
-                fly_number = file.index('fly') + 3
-                fly_number_done.append(file[fly_number])
+                fly_number = find_number(file)
+                fly_number_done.append(fly_number)
+            elif 'roi' in file:
+                roi_list.append(file)
 
         for fly_dir in os.listdir(roi_path):
             #this will clear out if results are already done for that fly and if it is a PER (roi)
             if not any(str(number) in fly_dir for number in fly_number_done) and 'fly' in fly_dir and 'PER' not in fly_dir: #to get fly folders without getting rois
-                print('fly dir ok', fly_dir)
-                #if os.path.isdir(os.path.join(roi_path, fly_dir)): # to get rid of the other stuff in the folder (including new results file)
+                print('fly dir is ok:', fly_dir)
+                dir_number = find_number(find_fly_string(fly_dir))
+                print('fly dir number:', dir_number)
                 jpeg_path = os.path.join(roi_path, fly_dir)
                 #since rois are different for every video specify with fly tag same as fly dir name
                 #this may need to be changed when I get more than one ROI per fly
-                roi_name = 'PER_' + str(fly_dir) + '.roi' #so roi should be saved PER_fly1.roi or PER_fly2.roi
+                #determine ROI name
+                #there may be more numbers because of date => look only at part of string after "fly" could be fly2_PER or fly_2.roi etc
+                for roi_file in roi_list:
+                    post_fly_string = find_fly_string(roi_file)
+                    if dir_number in post_fly_string:
+                        roi_name = roi_file
+                    else:
+                        print(f"could not find roi file for {fly_dir}")
+                print('roi_name:', roi_name)
                 save_file_name = "Results_video_" + str(fly_dir) + "_python.csv" #so each fly is saved seperately
                 save_path = "/oak/stanford/groups/trc/data/Ashley2/bruker videos/" + str(date) + "/analysis/" 
                 make_dirs(save_path)
@@ -181,6 +193,24 @@ def make_dirs (file_path):
     else:
         os.makedirs(file_path)
         print('file path created: ', file_path)
+        
+def find_number(string):
+    """want this to give number but if split with non-number character to stop. This will give just the first number it finds"""
+    number = ""
+    for i in range(len(string)):
+        current_character = string[i]      
+        if current_character.isdigit():
+            number = number + current_character 
+            if i != len(string)-1: #if it's not the last character
+                next_character = string[i+1]
+                if not next_character.isdigit():
+                    break
+    return number
+                    
+def find_fly_string(string):
+    """things after fly will be returned as string"""
+    post_fly_string = string.split("fly",1)[1]
+    return post_fly_string
 
 
 
