@@ -43,7 +43,12 @@ def main():
                 print('fly dir number:', dir_number)
                 if len(dir_number) == 0:
                     raise Exception(f"ERROR: THERE IS NO DIRECTORY NUMBER FOR...{fly_dir}")
+                print('roi path:', roi_path)
+                print('fly dir:', fly_dir)
+                
                 jpeg_path = os.path.join(roi_path, fly_dir)
+                
+                print('jpeg path', jpeg_path)
                 #since rois are different for every video specify with fly tag same as fly dir name
                 #this may need to be changed when I get more than one ROI per fly
                 #determine ROI name
