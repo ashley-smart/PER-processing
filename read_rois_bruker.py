@@ -58,7 +58,8 @@ def main():
                     if dir_number in post_fly_string:
                         roi_name = roi_file
                     else:
-                        print(f"could not find roi file for {fly_dir}")
+                        raise Exception(f"could not find roi file for {fly_dir}")
+                        continue             
                 print('roi_name:', roi_name)
                 save_file_name = "Results_video_" + str(fly_dir) + "_python.csv" #so each fly is saved seperately
                 save_path = "/oak/stanford/groups/trc/data/Ashley2/bruker videos/" + str(date) + "/analysis/" 
