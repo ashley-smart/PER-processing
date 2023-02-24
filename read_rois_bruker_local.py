@@ -23,7 +23,9 @@ dates = ['20210702', '20210607', '20210714', '20210716', '20210719']
 def main():
     for date in dates:
         print(f"RUNNING CURRENT DATE: {date}")
-        roi_path = "/D:/" + str(date) 
+        roi_path = "/D:/" + str(date) + "/analysis/"  ##JPEGS AND ROIS MUST BE SAVED IN SEPERATE ANALYSIS FOLDER
+        ##jpegs must have "frames" in the folder name
+        ## ROI folder must have "ROI" in the name
         
         ##I saved my jpegs as "flyname+condition"_frames
         ##ROIS are either a folder if they have light or just PER if they didn't have light (I need an option for either)
@@ -35,12 +37,12 @@ def main():
             if 'Results' in file:
                 fly_number = find_number(file)
                 fly_number_done.append(fly_number)
-            elif 'roi' in file:
+            elif 'roi' in file or 'ROI' in file:
                 roi_list.append(file)
 
         for fly_dir in os.listdir(roi_path):
             #this will clear out if results are already done for that fly and if it is a PER (roi)
-            if not any(str(number) in fly_dir for number in fly_number_done) and 'fly' in fly_dir and 'PER' not in fly_dir: #to get fly folders without getting rois
+            if not any(str(number) in fly_dir for number in fly_number_done) and 'fly' in fly_dir and 'ROI' not in fly_dir and 'PER' not in fly_dir: #to get fly folders without getting rois  #previously saved as PER
                 print('fly dir is ok:', fly_dir)
                 dir_number = find_number(find_fly_string(fly_dir))
                 print('fly dir number:', dir_number)
