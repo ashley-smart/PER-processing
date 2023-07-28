@@ -18,7 +18,8 @@ from read_roi import read_roi_zip
 
 ## Stuff to change  ##
 
-dates = ['20210702', '20210607', '20210714', '20210716', '20210719']
+dates = ['20230616']
+
 
 def main():
     for date in dates:

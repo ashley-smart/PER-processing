@@ -18,14 +18,16 @@ from read_roi import read_roi_zip
 
 ## Stuff to change  ##
 
-dates = ['20230130']
+dates = ['20230407']
+
+##ROI folder or file must have ROI, roi, or Roi, and must have a string match to corresponding fly folder name (i.e. fly1 and ROI_fly1)
 
 def main():
     for date in dates:
         print(f"RUNNING CURRENT DATE: {date}")
-        save_path = "D:/" + str(date) + "/results/"
+        save_path = "G:/bruker vid 2023/" + str(date) + "/results/"
         make_dirs(save_path)
-        raw_path = "D:/" + str(date) + "/analysis/"  ##JPEGS AND ROIS MUST BE SAVED IN SEPERATE ANALYSIS FOLDER
+        raw_path = "G:/bruker vid 2023/" + str(date) + "/analysis/"  ##JPEGS AND ROIS MUST BE SAVED IN SEPERATE ANALYSIS FOLDER
         ##jpegs must have "frames" in the folder name
         ## ROI folder must have "ROI" in the name
         ## must have - after fly# i.e fly1-20s
@@ -36,7 +38,8 @@ def main():
         #look for results files and roi files
         roi_list = []
         for file in os.listdir(raw_path):
-            if 'roi' in file or 'ROI' in file:
+            #print(os.listdir(raw_path))
+            if 'roi' in file or 'ROI' in file or 'Roi' in file:
                 roi_list.append(file)
         print(f"ROI LIST: {roi_list}")
 
@@ -47,10 +50,13 @@ def main():
             save_file_name = "Results_video_" + str(fly_dir) + "_python.csv" #so each fly is saved seperately
             completed = check_if_results(save_path, fly_dir)
             #this will clear out if results are already done for that fly and if it is a PER (roi)
-            print(completed)
+            print('completed', completed)
+            completed = False
 
             #got rid of fly_number done and using function to check save path. can readd if issue--- not any(str(number) in fly_dir for number in fly_number_done) and
-            if completed == False and 'fly' in fly_dir and 'ROI' not in fly_dir and 'PER' not in fly_dir: #to get fly folders without getting rois  #previously saved as PER
+            if completed == False and 'fly' in fly_dir and 'ROI' not in fly_dir and 'PER' not in fly_dir \
+                and os.path.isdir(os.path.join(raw_path, fly_dir)): #to get fly folders without getting rois  #previously saved as PER
+                
                 print('fly dir is ok:', fly_dir)
                 dir_number = find_number(find_fly_string(fly_dir), dash = 'y')
                 print('fly dir number:', dir_number)
@@ -159,7 +165,7 @@ def main():
                                     avg_intensity_each_roi = np.mean(flat_frame[all_roi_masks[roi_index]])
                                     all_roi_avg_intensity_per_frame.append(avg_intensity_each_roi)
                             else:
-                                print(jpeg_index)
+                                print(f'{jpeg_index} unable to load')
                             all_avg_intensity.append(all_roi_avg_intensity_per_frame)
 
                             #save results 
@@ -195,6 +201,7 @@ def get_roi_dict_file(raw_path, roi_name):
         roi_key_name = list(all_roi_info_dict[i].keys())
         roi_names_as_keys.append(roi_key_name[0])
     print(roi_names_as_keys)
+    return all_roi_info_dict, roi_names_as_keys
 
 
 def get_roi_dict_folder(raw_path, roi_folder_name):
@@ -217,10 +224,10 @@ def get_roi_dict_folder(raw_path, roi_folder_name):
     
 
 def find_matching_roi (fly_dir, raw_path):
-    """"""
+    """uses current fly directory to look for file in same folder that has ROI or variation in it and matching fly #"""
     fly_dir_string = find_number(find_fly_string(fly_dir), dash = 'y')
     for file in os.listdir(raw_path):
-        if str(fly_dir_string) in file and ('roi' in file or 'ROI' in file):
+        if str(fly_dir_string) in file and ('roi' in file or 'ROI' in file or 'Roi' in file):
             roi_name = file
             print(f"found matching ROI! {roi_name}")
             return roi_name
