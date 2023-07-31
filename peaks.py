@@ -242,7 +242,7 @@ def get_means(data, column_number):  #this will pull from whatever you call the 
     return means
 
 def is_column_in_list(data, row, column, str_list):
-	return data[row][column] in str_list
+	return str(data[row][column]) in str_list
 
 def is_column_light(data, row, column):
 	return is_column_in_list(data, row, column, ("Light", "light", "diode", "Mean(Light)", " Input 0"))
@@ -271,6 +271,7 @@ def get_peaks(data, h5file,  override = False,):
     #1. get mean column indices and mean titles
     mean_indices = get_mean_indices(data)
     mean_titles = get_mean_titles(data)
+    print(f'titles are {mean_titles}')
 
     if len(mean_indices) < 1:
         if override == True:
@@ -287,7 +288,7 @@ def get_peaks(data, h5file,  override = False,):
         single_column = get_means(data, mean_indices[mean_index])
         #to get each element out of their own array and into one array with all elements
         squeeze_column = np.squeeze(single_column) 
-        if is_column_light(mean_titles, 0, mean_index) or 'diode' in str(mean_titles[0][0]):
+        if is_column_light(mean_titles, 0, mean_index) or 'diode' in str(mean_titles[0][0]) or 'light' in str(mean_titles[0][0]):
             print('light')
             #peaks, _ = scipy.signal.find_peaks(squeeze_column, prominence = .5)
             columns.append(single_column)

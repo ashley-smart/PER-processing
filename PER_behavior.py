@@ -100,6 +100,8 @@ for fly in h5files:
         if 'roi data' in f.keys():
             roi_data = f['roi data'][()]
             print(roi_data[0:10])
+            if 'light' in str(roi_data[0][0]):
+                print('has light')
             print(np.shape(roi_data))
             data_peaks, properties, columns = peaks.get_peaks(roi_data, each_path)
         if 'voltage data' in f.keys():
