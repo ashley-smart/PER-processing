@@ -21,8 +21,9 @@ import h5py
 date = '20230407'
 fly_id_date_code = 'b-0407'
 
-Path = 'E:/bruker vid 2023/20230407/results/'  #path to results files from read ROIs or DLC
+Path = 'G:/bruker vid 2023/20230407/results/'  #path to results files from read ROIs or DLC
 SavePath = Path + 'h5_files/'
+peaks.make_dirs(SavePath)
 
 
 ####   mostly static variables  ########
@@ -96,10 +97,12 @@ h5files = [file for file in os.listdir(SavePath) if '.h5' in file]
 for fly in h5files:
     each_path = os.path.join(SavePath, fly)
     with h5py.File(each_path, 'a') as f:
-        if ['roi data'] in f.keys():
+        if 'roi data' in f.keys():
             roi_data = f['roi data'][()]
+            print(roi_data[0:10])
+            print(np.shape(roi_data))
             data_peaks, properties, columns = peaks.get_peaks(roi_data, each_path)
-        if ['voltage data'] in f.keys():
+        if 'voltage data' in f.keys():
             voltage_data = f['voltage data'][()]
             light_peaks, light_properties, columns = peaks.get_peaks(roi_data, each_path)
 

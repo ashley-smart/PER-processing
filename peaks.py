@@ -46,6 +46,10 @@ def check_for_key(h5Path, key):
         else:
             return False
 
+def make_dirs(Path):
+    """make folder if it doesn't already exist"""
+    if not os.path.isdir(Path):
+        os.mkdir(Path)
 
 ## set-up functions (import and organize data)
 def check_for_voltage_file (Path):
@@ -191,7 +195,8 @@ def is_column_mean (data, row, column):
         column: column of data to look in
     returns: True if finds keyword"""
     
-    return "Mean" in data[row][column] or "diode" in data[row][column] or " Input 0" in data[row][column] 
+    return "Mean" in str(data[row][column]) or "diode" in str(data[row][column]) or " Input 0" in str(data[row][column]) 
+
 
 def get_header(data, column_number):  #this will pull from whatever you call the variable that you have gotten your csv data from and specified column 
     title_list = []
@@ -282,7 +287,7 @@ def get_peaks(data, h5file,  override = False,):
         single_column = get_means(data, mean_indices[mean_index])
         #to get each element out of their own array and into one array with all elements
         squeeze_column = np.squeeze(single_column) 
-        if is_column_light(mean_titles, 0, mean_index) or 'diode' in mean_titles[0][0]:
+        if is_column_light(mean_titles, 0, mean_index) or 'diode' in str(mean_titles[0][0]):
             print('light')
             #peaks, _ = scipy.signal.find_peaks(squeeze_column, prominence = .5)
             columns.append(single_column)
