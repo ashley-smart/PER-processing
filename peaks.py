@@ -251,13 +251,14 @@ def is_column_light(data, row, column):
 
 
 ##
-def get_peaks(data, h5file,  override = False,):
+def get_peaks(data, h5file,  framerate, override = False, prominence = 3, distance = 15):
     """ uses scipy peaks to find peak points of data 
     finds negative peaks for PER and positive peaks for light. 
-    Will also add the peaks to the h5 file of the fly
+    Will also add the peaks to the h5 file of the fly and peaks/s to the h5 file
     args: 
         data = raw data imported that contains a header with "mean", "diode", "input 0"
         h5file = path to h5 file data to save peaks data
+        framerate = frames/s or data/s in case of voltage 
         override = False as default. If true then it allows the 
             function to find peaks for data that has no header 
             (will assume it is PER and do negative peaks)
@@ -276,7 +277,7 @@ def get_peaks(data, h5file,  override = False,):
     if len(mean_indices) < 1:
         if override == True:
             squeeze_column = np.squeeze(data)
-            peaks, properties = scipy.signal.find_peaks(squeeze_column*-1, prominence = 3, distance = 15) 
+            peaks, properties = scipy.signal.find_peaks(squeeze_column*-1, prominence = prominence, distance = distance) 
             return peaks, properties, squeeze_column
         else:
             raise Exception(f'There is no identified mean index--If due to lack of header consider overriding and inputting single array')
@@ -298,13 +299,18 @@ def get_peaks(data, h5file,  override = False,):
             #peaks, _ = scipy.signal.find_peaks(squeeze_column, height = light_median[0], prominence = .3, distance = 10)
             peaks, properties = scipy.signal.find_peaks(squeeze_column, height = early_light_max +.001, prominence = .1, distance = 10)
             add_to_h5(h5file, 'light peaks', peaks)
-            
+            ## get peaks per second rather than frames
+            peaks_sec = np.array(peaks) / framerate 
+            add_to_h5(h5file, 'light peaks sec', peaks_sec)
         else:
             print('PER')
             peaks, properties = scipy.signal.find_peaks(squeeze_column*-1, prominence = 3, distance = 15) 
             columns.append(single_column)
             add_to_h5(h5file, 'PER peaks', peaks)
             #distance is req frames between peaks
+            ## get peaks per second rather than frames
+            peaks_sec = np.array(peaks) / framerate 
+            add_to_h5(h5file, 'PER peaks sec', peaks_sec)
         all_peaks.append(peaks)
     return all_peaks, properties, columns
 

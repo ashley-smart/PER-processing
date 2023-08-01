@@ -1,7 +1,3 @@
-
-## rewriting scipy peaks with a library
-
-
 # import stuff
 import peaks #my library
 
@@ -18,10 +14,12 @@ import h5py
 
 
 ##### get paths ##########
-date = '20230407'
-fly_id_date_code = 'b-0407'
+date = '20230616'
+fly_id_date_code = f'b-{date[-4:]}' ##'b-0407'
 
-Path = 'G:/bruker vid 2023/20230407/results/'  #path to results files from read ROIs or DLC
+#Path = 'G:/bruker vid 2023/20230407/results/'  #path to results files from read ROIs or DLC
+Path = f'E:/bruker_vid_2023/{date}/results/'  #path to results files from read ROIs or DLC
+
 SavePath = Path + 'h5_files/'
 peaks.make_dirs(SavePath)
 
@@ -31,7 +29,9 @@ data_reducer = 100
 voltage_framerate = 10000/data_reducer #frames/s # 1frame/.1ms * 1000ms/1s = 10000f/s
 #with reducer i get 1 frame for every .1 * 100 ms => frame/.1*100 ms * 1000ms/s = 100f/s
 #each "frame" is 0.1ms
-video_framerate = 200 #f/s
+
+## for older videos the video framerate should hve been 200 #f/s, now 5-4 date it appears to be 38.02 f/s (calculated by figuring out frames between 20s light flashes)
+video_framerate = 38   
 #video_framerate_downstairs = 33
 
 
@@ -94,35 +94,56 @@ interval_time = None ##decide if I should change this later
 
 h5files = [file for file in os.listdir(SavePath) if '.h5' in file]
 
+#calculate peaks and save to h5 (as well as peaks/sec)
 for fly in h5files:
     each_path = os.path.join(SavePath, fly)
     with h5py.File(each_path, 'a') as f:
         if 'roi data' in f.keys():
+            framerate = video_framerate
             roi_data = f['roi data'][()]
             print(roi_data[0:10])
             if 'light' in str(roi_data[0][0]):
                 print('has light')
             print(np.shape(roi_data))
-            data_peaks, properties, columns = peaks.get_peaks(roi_data, each_path)
+            data_peaks, properties, columns = peaks.get_peaks(roi_data, each_path, framerate)
+            peaks.add_to_h5(each_path, 'roi peak left bases', properties['left_bases'])
+            peaks.add_to_h5(each_path, 'roi peak prominences', properties['prominences'])
+            peaks.add_to_h5(each_path, 'video framerate', video_framerate)
+            
         if 'voltage data' in f.keys():
+            framerate = voltage_framerate
             voltage_data = f['voltage data'][()]
-            voltage_peaks, voltage_properties, voltage_columns = peaks.get_peaks(voltage_data, each_path)
-
-## get peaks per second rather than frames
-data_peaks_sec = np.array(data_peaks) / video_framerate ##rois will always be retrieved from video
-voltage_peaks_sec = np.array(voltage_peaks) / voltage_framerate #voltage will always have the same framerate
-
+            voltage_peaks, voltage_properties, voltage_columns = peaks.get_peaks(voltage_data, each_path, framerate)
+            peaks.add_to_h5(each_path, 'voltage peak left bases', voltage_properties['left_bases'])
+            peaks.add_to_h5(each_path, 'voltage peak prominences', voltage_properties['prominences'])
+            peaks.add_to_h5(each_path, 'voltage framerate', voltage_framerate)
 
 
 
+## to run onsets
+# 1. get indices where there is a decrease (smoothed_decrease index)
+# 2. see if the onset is within 50 frames of a peak and if so append it to the list
 
 
-##find peak onsets
 
-PER_onsets_matrix_sec = get_onsets_matrix(PER_peaks_sec, data, PER_columns, identifier = 'PER')
-light_onsets_matrix_sec = get_onsets_matrix(light_peaks_sec, light_data[data_index], light_columns, identifier = 'light')
-light_onset_indices = light_peak_properties['left_bases']
-PER_onset_indices = PER_peak_properties['left_bases']
+# for fly in h5files:
+#     each_path = os.path.join(SavePath, fly)
+#     with h5py.File(each_path, 'a') as f:
+#         print(f.keys())
+#         #use onsets to get PER to light
+
+#         #should I smooth it?
+
+
+
+
+
+# ##find peak onsets
+
+# PER_onsets_matrix_sec = get_onsets_matrix(PER_peaks_sec, data, PER_columns, identifier = 'PER')
+# light_onsets_matrix_sec = get_onsets_matrix(light_peaks_sec, light_data[data_index], light_columns, identifier = 'light')
+# light_onset_indices = light_peak_properties['left_bases']
+# PER_onset_indices = PER_peak_properties['left_bases']
 
 
 ##make plots
