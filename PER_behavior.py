@@ -106,8 +106,23 @@ for fly in h5files:
             data_peaks, properties, columns = peaks.get_peaks(roi_data, each_path)
         if 'voltage data' in f.keys():
             voltage_data = f['voltage data'][()]
-            light_peaks, light_properties, columns = peaks.get_peaks(roi_data, each_path)
+            voltage_peaks, voltage_properties, voltage_columns = peaks.get_peaks(voltage_data, each_path)
 
+## get peaks per second rather than frames
+data_peaks_sec = np.array(data_peaks) / video_framerate ##rois will always be retrieved from video
+voltage_peaks_sec = np.array(voltage_peaks) / voltage_framerate #voltage will always have the same framerate
+
+
+
+
+
+
+##find peak onsets
+
+PER_onsets_matrix_sec = get_onsets_matrix(PER_peaks_sec, data, PER_columns, identifier = 'PER')
+light_onsets_matrix_sec = get_onsets_matrix(light_peaks_sec, light_data[data_index], light_columns, identifier = 'light')
+light_onset_indices = light_peak_properties['left_bases']
+PER_onset_indices = PER_peak_properties['left_bases']
 
 
 ##make plots
