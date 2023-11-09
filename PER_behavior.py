@@ -14,7 +14,9 @@ import h5py
 
 
 ##### get paths ##########
-date = '20230616'
+date = '20230609' #run 505 next
+
+
 fly_id_date_code = f'b-{date[-4:]}' ##'b-0407'
 
 #Path = 'G:/bruker vid 2023/20230407/results/'  #path to results files from read ROIs or DLC
@@ -102,13 +104,18 @@ for fly in h5files:
             framerate = video_framerate
             roi_data = f['roi data'][()]
             print(roi_data[0:10])
-            if 'light' in str(roi_data[0][0]):
-                print('has light')
             print(np.shape(roi_data))
             data_peaks, properties, columns = peaks.get_peaks(roi_data, each_path, framerate)
             peaks.add_to_h5(each_path, 'roi peak left bases', properties['left_bases'])
             peaks.add_to_h5(each_path, 'roi peak prominences', properties['prominences'])
             peaks.add_to_h5(each_path, 'video framerate', video_framerate)
+            if 'light' in str(roi_data[0][0]):
+                print('has light')
+                data_peaks, properties, columns = peaks.get_peaks(roi_data, each_path, framerate)
+                peaks.add_to_h5(each_path, 'light roi peak left bases', properties['left_bases'])
+                peaks.add_to_h5(each_path, 'light roi peak prominences', properties['prominences'])
+               # peaks.add_to_h5(each_path, 'video framerate', video_framerate)
+            
             
         if 'voltage data' in f.keys():
             framerate = voltage_framerate

@@ -18,16 +18,18 @@ from read_roi import read_roi_zip
 
 ## Stuff to change  ##
 
-dates = ['20230407']
+dates = ['20230609', '20230606', '20230504', '20230428', '20230330']
 
 ##ROI folder or file must have ROI, roi, or Roi, and must have a string match to corresponding fly folder name (i.e. fly1 and ROI_fly1)
 
 def main():
     for date in dates:
         print(f"RUNNING CURRENT DATE: {date}")
-        save_path = "G:/bruker vid 2023/" + str(date) + "/results/"
+        #save_path = "E:/bruker_vid_2023/" + str(date) + "/results/"
+        save_path = "H:/" + str(date) + "/results/"
         make_dirs(save_path)
-        raw_path = "G:/bruker vid 2023/" + str(date) + "/analysis/"  ##JPEGS AND ROIS MUST BE SAVED IN SEPERATE ANALYSIS FOLDER
+        #raw_path = "E:/bruker_vid_2023/" + str(date) + "/analysis/"  ##JPEGS AND ROIS MUST BE SAVED IN SEPERATE ANALYSIS FOLDER
+        raw_path = "H:/" + str(date) + "/analysis/"
         ##jpegs must have "frames" in the folder name
         ## ROI folder must have "ROI" in the name
         ## must have - after fly# i.e fly1-20s
@@ -54,7 +56,7 @@ def main():
             completed = False
 
             #got rid of fly_number done and using function to check save path. can readd if issue--- not any(str(number) in fly_dir for number in fly_number_done) and
-            if completed == False and 'fly' in fly_dir and 'ROI' not in fly_dir and 'PER' not in fly_dir \
+            if completed == False and 'fly' in fly_dir and 'Roi' not in fly_dir and 'PER' not in fly_dir \
                 and os.path.isdir(os.path.join(raw_path, fly_dir)): #to get fly folders without getting rois  #previously saved as PER
                 
                 print('fly dir is ok:', fly_dir)

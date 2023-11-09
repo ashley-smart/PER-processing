@@ -84,7 +84,7 @@ def import_voltage_data (voltage_path, data_reducer = 100):
     Reduces the data by data reducer amount (every data_reducer(th) element is taken 
     and the rest is ignored). Default data_reducer number = 100"""
     if "Voltage" not in voltage_path:
-        print("Caution: this does not contain 'Voltage', make sure it's the right file")
+        print("Caution: this file: {voltage_path} does not contain 'Voltage', make sure it's the right file")
     light_data = []
     with open(os.path.join(voltage_path), 'r') as raw_volt:
         data_single = []
@@ -110,13 +110,8 @@ def find_fly_number(file):
     return fly_number
 
 
-def find_fly_string(string):
-    """things after fly will be returned as string"""
-    post_fly_string = string.split("fly",1)[1]
-    return post_fly_string
-
-def find_number(string):
-    """want this to give number but if split with non-number character to stop. This will give just the first number it finds"""
+def find_number(string, dash = 'n'):
+    """want this to give number but if split with non-number character to stop. This will give just the first number it finds unless dash = 'y' then it will include the next 3 characters"""
     number = ""
     for i in range(len(string)):
         current_character = string[i]      
@@ -125,8 +120,18 @@ def find_number(string):
             if i != len(string)-1: #if it's not the last character
                 next_character = string[i+1]
                 if not next_character.isdigit():
-                    break
+                    if dash == 'n':
+                        break
+                    else:
+                        if next_character == '-':
+                            number = number + string[i+1:i+4]
+                            break
     return number
+                    
+def find_fly_string(string):
+    """things after fly will be returned as string"""
+    post_fly_string = string.split("fly",1)[1]
+    return post_fly_string
 
 ## probably change this. I don't think I want "asks" anymore
 def get_intervals_and_asks(list_map, file_name_list):
@@ -206,6 +211,18 @@ def get_header(data, column_number):  #this will pull from whatever you call the
         title_list.append(row[column_number])
     titles = np.array(title_list[:1]) #changes the list into a numpy array. [:1] means take the first row
     return titles
+
+def get_diode_column(raw_light_data):
+    """light data should be a single fly and have the header be the first row"""
+    header = raw_light_data[0]
+    diode_column = []
+    for i in range(header):
+        if "Input 0" in header[i]:
+            diode_column = i
+    reshape_light_data = np.transpose(raw_light_data[1:])
+    column = reshape_light_data[:][diode_column]
+    column = [float(i) for i in column]
+    return column
 
 def get_mean_titles(data):
     """data is raw data for one fly, returns the titles of every column that has Mean in it"""
@@ -289,7 +306,8 @@ def get_peaks(data, h5file,  framerate, override = False, prominence = 3, distan
         single_column = get_means(data, mean_indices[mean_index])
         #to get each element out of their own array and into one array with all elements
         squeeze_column = np.squeeze(single_column) 
-        if is_column_light(mean_titles, 0, mean_index) or 'diode' in str(mean_titles[0][0]) or 'light' in str(mean_titles[0][0]):
+        print(f'current mean title is {mean_titles[0][mean_index]}')
+        if is_column_light(mean_titles, 0, mean_index) or 'diode' in str(mean_titles[0][mean_index]) or 'light' in str(mean_titles[0][mean_index]) or 'Input 0' in str(mean_titles[0][mean_index])  or 'Light' in str(mean_titles[0][mean_index]):
             print('light')
             #peaks, _ = scipy.signal.find_peaks(squeeze_column, prominence = .5)
             columns.append(single_column)
@@ -302,7 +320,7 @@ def get_peaks(data, h5file,  framerate, override = False, prominence = 3, distan
             ## get peaks per second rather than frames
             peaks_sec = np.array(peaks) / framerate 
             add_to_h5(h5file, 'light peaks sec', peaks_sec)
-        else:
+        elif 'PER' in str(mean_titles[0][mean_index]):
             print('PER')
             peaks, properties = scipy.signal.find_peaks(squeeze_column*-1, prominence = 3, distance = 15) 
             columns.append(single_column)
@@ -311,7 +329,347 @@ def get_peaks(data, h5file,  framerate, override = False, prominence = 3, distan
             ## get peaks per second rather than frames
             peaks_sec = np.array(peaks) / framerate 
             add_to_h5(h5file, 'PER peaks sec', peaks_sec)
+        else:
+            print(f'Not finding PER or Light for {str(mean_titles[0][mean_index])}')
+
         all_peaks.append(peaks)
     return all_peaks, properties, columns
 
 
+def get_voltage_data(dataset_path):
+    """gets voltage data from voltage file and 
+    returns a list of times and a list of voltage values.
+    
+    args:
+    Path = path to fly (folder that contains brain data and voltage data)
+    data_reducer = default 100, to reduce the number of timepoints 
+    it gets because the resolution is very high when collected
+    
+    returns:
+    voltage data: list of voltage values (every data reducer amount)
+    voltage_time: list of timepoints saved by voltage file"""
+    
+    #1. get voltage file
+    #2. get time column (first column)
+    #3. get data column 
+    voltage_path = find_voltage_file(dataset_path)
+    with open(voltage_path, 'r') as rawfile:
+        reader = csv.reader(rawfile)
+        data_single = []
+#         for i, row in enumerate(reader):
+#             if i % data_reducer == 0: #will downsample the data 
+#                 data_single.append(row)
+        for i, row in enumerate(reader):
+            data_single.append(row)
+        light_data = data_single    
+
+    light_data_column = get_diode_column(light_data)
+    time_data_column = get_time_column(light_data)
+    return light_data_column, time_data_column
+    
+def get_time_column(raw_light_data):
+    """light data should be single fly and have the header be the first row"""
+    header = raw_light_data[0]
+    diode_column = []
+    for i in range(len(header)):
+        if 'Time(ms)' in header[i]: 
+            time_column = i
+#         else:
+#             print(f'could not find "Time(ms)" in header{header}')
+    reshape_light_data = np.transpose(raw_light_data[1:])
+    column = reshape_light_data[:][time_column] #don't want header anymore
+    column = [float(i) for i in column] #for some reason it was saved as string before
+    return column
+
+def find_voltage_file(dataset_path):
+    """path should be fly folder. Returns path to specific voltage csv"""
+    for name in os.listdir(dataset_path):
+        if 'Voltage' in name and '.csv' in name:
+            voltage_file = name
+            voltage_path = os.path.join(dataset_path, voltage_file)
+    return voltage_path
+
+
+def get_light_peaks (dataset_path): #, data_reducer = 100):
+    
+    """input fly path and get out the light peaks files in milliseconds"""
+#     data_reducer = 100
+#     light_data = []
+#     voltage_path = find_voltage_file(Path)
+#     with open(voltage_path, 'r') as rawfile:
+#         reader = csv.reader(rawfile)
+#         data_single = []
+#         for i, row in enumerate(reader):
+#             if i % data_reducer == 0: #will downsample the data 
+#                 data_single.append(row)
+#         #light_data.append(data_single) #for more than one fly
+#         light_data = data_single    
+    voltage_multiplier = 0.9991401258909588  ##this is the average of the more accurate estimations of the last bleedthrough time and corresponding light flash in voltage
+    #voltage_multiplier = 0.9991021996109531  #this was calculated from bleedthrough and voltage difference on bruker 8.7.23
+    light_data_column, time_data = get_voltage_data(dataset_path)
+
+    # find peaks
+    light_median = np.median(light_data_column)
+    early_light_max = max(light_data_column[0:2000])
+    light_peaks, properties = scipy.signal.find_peaks(light_data_column, height = early_light_max +.001, prominence = .1, distance = 10)
+    #there is a condition that requires this, but I can't remember exactly what the data looked like
+    if len(light_peaks) == 0:
+        print("attempting new early_light_max, because no light peaks")
+        early_light_max = max(light_data_column[0:100])
+        light_peaks, properties = scipy.signal.find_peaks(light_data_column, height = early_light_max +.001, prominence = .1, distance = 10)
+        
+        if len(light_peaks) == 0:
+            print("There are still no light peaks")
+            print("skipping this fly--no light peaks")
+            
+    
+#     ## convert to seconds
+#     voltage_framerate =  10000/data_reducer #frames/s # 1frame/.1ms * 1000ms/1s = 10000f/s
+#     light_peaks_adjusted = light_peaks/voltage_framerate
+    
+    ##use time to give voltage in time
+    ##light_peaks should be the indices of peaks => I can check the indices in time column
+    light_peaks = np.array(light_peaks)
+    print(np.shape(light_peaks))
+    time_data = np.array(time_data)
+    light_ms = time_data[light_peaks]*voltage_multiplier
+
+    #save light peaks
+    light_peaks_path = os.path.join(dataset_path, 'light_peaks.h5')
+    #add_to_h5(light_peaks_path, 'light peaks ms', light_ms)
+    
+    #get just one peak (will take the last value before the drop)
+    single_light_ms = get_single_light_peaks(light_ms, 10000)
+    add_to_h5(light_peaks_path, 'light peaks ms', single_light_ms)
+    return single_light_ms
+
+
+
+def get_single_light_peaks(light_peaks, seperator):
+    """takes in array of light peaks and makes sure they are at least seperator distance apart
+    args:
+    light_peaks = array that has the peaks in it (in ms or s but change seperator)
+    seperator = value that two adjacent peaks must be apart in order to be kept. 
+    last number that is far enough apart will be kept"""
+    diff = light_peaks[1:] - light_peaks[0:-1]
+    single_light_peak_indices = np.where(diff>seperator)[0]
+    single_light_peaks = light_peaks[single_light_peak_indices]
+    return single_light_peaks
+#     single_light_peaks = []
+#     for i in range(len(light_peaks)-1):
+#         current = light_peaks[i]
+#         next_time = light_peaks[i+1]
+#         if next_time - current > seperator:
+#             single_light_peaks.append(current)
+#     single_light_peaks = np.array(single_light_peaks)
+#     return single_light_peaks
+
+
+
+def get_brain_t_switch_set(dataset_path, exp_length1 = 20, exp_length2 = 40):
+    """returns array of arrays of switch times that correspond to index in t of brains.
+    returns seperately 20 and 40s experiemnts
+    20s_t_points = [[start1 stop1] [start 2 stop2]]
+    *takes time from zstack timestamps to find which zstack the light is in"""
+    
+    light_peaks_twenty_times, light_peaks_forty_times = get_times_switch_blocks (dataset_path, exp_length1, exp_length2)
+    timestamps = load_timestamps(dataset_path)
+    average_timestamps = np.mean(timestamps, axis = 1)/1000  ##to convert ms to s to match light_peaks
+    
+    first_timestamps = []
+    last_timestamps = []
+    for t in timestamps:
+        first_timestamps.append(t[0])
+        last_timestamps.append(t[-1])
+
+    first_timestamps = np.array(first_timestamps)
+    first_timestamps_s = first_timestamps/1000
+    last_timestamps = np.array(last_timestamps)
+    last_timestamps_s = last_timestamps/1000
+    
+    twenty_switch_set_t = []
+    forty_switch_set_t = []
+    for switch_set in light_peaks_twenty_times:
+        start_time = switch_set[0]
+        end_time = switch_set[1]
+        
+        ##find start time based on z-stack times
+        #the last z = 0 timstamp that is less then switch time
+        first_index_start = np.where(first_timestamps_s < start_time)[0][-1]
+        #last z slice (z = 49) that switch time happens before
+        last_index_start = np.where(last_timestamps_s > start_time)[0][0]
+        if first_index_start == last_index_start:
+            start_time_index = first_index_start
+        ##find out if it's in the middle of two stacks
+        elif last_timestamps_s[first_index_start] < start_time < first_timestamps_s[last_index_start]:
+            ##then it's between timestamps, if start time then have switch start at the following zstack
+            start_time_index = last_index_start
+        else:
+            #this shouldn't happen
+            print('odd scenario. not in same z-stack and not between z-stacks')
+            
+        #end time
+        first_index_end = np.where(first_timestamps_s < end_time)[0][-1]
+        last_index_end = np.where(last_timestamps_s > end_time)[0][0]
+        if first_index_end == last_index_end:
+            end_time_index = first_index_end
+        elif last_timestamps_s[first_index_end] < end_time < first_timestamps_s[last_index_end]:
+            #ending index choose the zstack before (miss the bit between, but I'm removing that data anyway)
+            end_time_index = first_index_end
+        else:
+            #this shouldn't happen
+            print('odd scenario. not in same z-stack and not between z-stacks')
+
+        both = (start_time_index, end_time_index)
+        twenty_switch_set_t.append(both)
+
+    for switch_set in light_peaks_forty_times:
+        start_time = switch_set[0]
+        end_time = switch_set[1]
+        
+        ##find start time based on z-stack times
+        #the last z = 0 timstamp that is less then switch time
+        first_index_start = np.where(first_timestamps_s < start_time)[0][-1]
+        #last z slice (z = 49) that switch time happens before
+        last_index_start = np.where(last_timestamps_s > start_time)[0][0]
+        if first_index_start == last_index_start:
+            start_time_index = first_index_start
+        ##find out if it's in the middle of two stacks
+        elif last_timestamps_s[first_index_start] < start_time < first_timestamps_s[last_index_start]:
+            ##then it's between timestamps, if start time then have switch start at the following zstack
+            start_time_index = last_index_start
+        else:
+            #this shouldn't happen
+            print('odd scenario. not in same z-stack and not between z-stacks')
+            
+        #end time
+        first_index_end = np.where(first_timestamps_s < end_time)[0][-1]
+        last_index_end = np.where(last_timestamps_s > end_time)[0][0]
+        if first_index_end == last_index_end:
+            end_time_index = first_index_end
+        elif last_timestamps_s[first_index_end] < end_time < first_timestamps_s[last_index_end]:
+            #ending index choose the zstack before (miss the bit between, but I'm removing that data anyway)
+            #changin this to last index because it's been ending too early
+            end_time_index = last_index_end
+        else:
+            #this shouldn't happen
+            print('odd scenario. not in same z-stack and not between z-stacks')
+
+        both = (start_time_index, end_time_index)
+        forty_switch_set_t.append(both)
+    twenty_switch_set_t = np.array(twenty_switch_set_t)
+    forty_switch_set_t = np.array(forty_switch_set_t)
+    return twenty_switch_set_t, forty_switch_set_t
+
+def get_times_switch_blocks (dataset_path, exp_length1 = 20, exp_length2 = 40):
+    """returns array of arrays of times in s that each block 
+    starts and ends seperate arrays returned for 20 and 40 (or specified expt times)
+    i.e. 20s_times = [[30.9 400.2][600.7  987.6]]  [[start1 stop 1] [start 2 stop 2]] """
+    
+    
+    light_peaks_path = os.path.join(dataset_path, 'light_peaks.h5')
+    opened_peaks = open_light_peaks(light_peaks_path)
+    if opened_peaks is not None:
+        light_peaks = opened_peaks/1000
+        print('found light in h5 file')
+    else:
+        light_peaks = get_light_peaks(dataset_path)/1000
+    twenty, forty = get_switch_start_stop_indices(dataset_path, exp_length1, exp_length2)
+    
+    light_peaks_twenty_times = []
+    for set_index in range(len(twenty)):
+        t = (light_peaks[twenty[set_index][0]], light_peaks[twenty[set_index][1]])
+        light_peaks_twenty_times.append(t)
+
+    light_peaks_forty_times = []
+    for set_index in range(len(forty)):
+        t = (light_peaks[forty[set_index][0]], light_peaks[forty[set_index][1]])
+        light_peaks_forty_times.append(t)
+
+    light_peaks_twenty_times = np.array(light_peaks_twenty_times)
+    light_peaks_forty_times = np.array(light_peaks_forty_times)
+    
+    return light_peaks_twenty_times, light_peaks_forty_times
+
+
+##support functions
+def get_switch_start_stop_indices(dataset_path, exp_length1 = 20, exp_length2 = 40):
+    """returns an array of tuples of start and stop indices for starts and stops of 20s or 40s. 
+    20 and 40 are returned in seperate arrays.
+    inclusive (start = first index and stop = last index)"""
+    switch_points = find_switch_points(dataset_path)
+    light_peaks_path = os.path.join(dataset_path, 'light_peaks.h5')
+    opened_peaks = open_light_peaks(light_peaks_path)
+    if opened_peaks is not None:
+        light_peaks = opened_peaks/1000
+    else:
+        light_peaks = get_light_peaks(dataset_path)/1000
+    
+    light_times = light_peaks[1:]- light_peaks[0:-1]
+    twenty = []
+    forty = []
+    for i in range(len(switch_points)):
+        switch_index = switch_points[i] 
+        print(switch_index)
+        print(light_times[switch_index])
+        if i == 0:
+            if exp_length1 - 5 < light_times[switch_index] < exp_length1 + 5:
+                t = (0, switch_index + 1) #the + 1 helps it end and start at the same place
+                twenty.append(t)
+            elif exp_length2 - 5 < light_times[switch_index] < exp_length2 + 5:
+                t = (0, switch_index + 1)
+                forty.append(t)
+        else:
+            previous_index = switch_points[i - 1] + 1 
+            if exp_length1 - 5 < light_times[switch_index] < exp_length1 + 5:
+                t = (previous_index, switch_index + 1)
+                twenty.append(t)
+            elif exp_length2 - 5 < light_times[switch_index] < exp_length2 + 5:
+                t = (previous_index, switch_index + 1)
+                forty.append(t)
+    twenty = np.array(twenty)
+    forty = np.array(forty)
+    return twenty, forty
+
+
+def find_switch_points(dataset_path, difference=15):
+    """takes dataset path and imports light peaks and returns the times there is a switch
+    args:
+    dataset_path = path to fly folder that has voltage file
+    difference = value that it will sort by to see if there is a switch point. 
+    The difference between two intervals should be greater than this number (i.e. 40-20 = 20 >15)
+    returns:
+    indices of the last trial before switch"""
+    
+    #get light peaks
+    light_peaks_path = os.path.join(dataset_path, 'light_peaks.h5')
+    opened_peaks = open_light_peaks(light_peaks_path)
+    print(opened_peaks)
+    if opened_peaks is not None:
+        light_peaks = opened_peaks/1000
+    else:
+        light_peaks = get_light_peaks(dataset_path)/1000
+    
+    #find times between light flashes
+    light_times = light_peaks[1:]- light_peaks[0:-1] 
+    #check that light peaks is single light peaks 
+    if len(np.where(light_times < difference)[0]):
+        #light_peaks is taking more than one datapoint per peak
+        raise Exception(f'WARNING: these are not single peaks check indices {np.where(light_times<15)[0]}')
+    
+    #find switch points
+    light_times_diff = np.rint(abs(light_times[1:] - light_times[0:-1]))
+    switch_ind = np.where(light_times_diff > 15)[0] 
+    #switch_ind = np.insert(switch_ind, 0,light_times_diff[0]) #This will add 0 but I don't need it
+     
+#     ##switch times in s
+#     switch_times_s = light_peaks[switch_ind]
+    
+#     #block interval values
+#     #skip 0 because it is dark and then subtract 1 to make sure its in the block 
+#     #(the end point is the last point anyway so it should be fine without the -1)
+#     ind_to_get_ints = switch_ind[1:] - 1 
+#     interval_sets = light_times[ind_to_get_ints]
+#     interval_sets_int = [int(i) for i in interval_sets]
+    
+    return switch_ind
