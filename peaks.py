@@ -599,11 +599,12 @@ def get_switch_start_stop_indices(dataset_path, exp_length1 = 20, exp_length2 = 
     inclusive (start = first index and stop = last index)"""
     switch_points = find_switch_points(dataset_path)
     light_peaks_path = os.path.join(dataset_path, 'light_peaks.h5')
-    opened_peaks = open_light_peaks(light_peaks_path)
-    if opened_peaks is not None:
-        light_peaks = opened_peaks/1000
-    else:
-        light_peaks = get_light_peaks(dataset_path)/1000
+    #opened_peaks = open_light_peaks(light_peaks_path)
+    # if opened_peaks is not None:
+    #     light_peaks = opened_peaks/1000
+    # else:
+    light_peaks = get_light_peaks(dataset_path)/1000
+
     
     light_times = light_peaks[1:]- light_peaks[0:-1]
     twenty = []
