@@ -18,7 +18,7 @@ from read_roi import read_roi_zip
 
 ## Stuff to change  ##
 
-dates = ['20230609', '20230606', '20230504', '20230428', '20230330']
+dates = ['20231215', '20231220']
 
 ##ROI folder or file must have ROI, roi, or Roi, and must have a string match to corresponding fly folder name (i.e. fly1 and ROI_fly1)
 
@@ -26,10 +26,11 @@ def main():
     for date in dates:
         print(f"RUNNING CURRENT DATE: {date}")
         #save_path = "E:/bruker_vid_2023/" + str(date) + "/results/"
-        save_path = "H:/" + str(date) + "/results/"
+        #save_path = "H:/" + str(date) + "/results/"
+        save_path = "C:/Documents/Stanford/bruker behavior/roi_results" + str(date) + "/results/"
         make_dirs(save_path)
-        #raw_path = "E:/bruker_vid_2023/" + str(date) + "/analysis/"  ##JPEGS AND ROIS MUST BE SAVED IN SEPERATE ANALYSIS FOLDER
-        raw_path = "H:/" + str(date) + "/analysis/"
+        raw_path = "E:/bruker_vid_2023/" + str(date) + "/analysis/"  ##JPEGS AND ROIS MUST BE SAVED IN SEPERATE ANALYSIS FOLDER
+        #raw_path = "H:/" + str(date) + "/analysis/"
         ##jpegs must have "frames" in the folder name
         ## ROI folder must have "ROI" in the name
         ## must have - after fly# i.e fly1-20s
